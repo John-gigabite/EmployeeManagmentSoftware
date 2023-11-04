@@ -20,11 +20,19 @@ namespace employeeManagmentSoftware.Controllers
         }
 
         // GET: Employees
-        public async Task<IActionResult> Index()
+        public IActionResult Index(string searchString)
         {
-              return _context.Employee != null ? 
-                          View(await _context.Employee.ToListAsync()) :
-                          Problem("Entity set 'employeeManagmentSoftwareContext.Employee'  is null.");
+            ViewData["CurrentFilter"] = searchString;
+            var employee = from e in _context.Employee
+                           select e;
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                employee = employee.Where(e => e.EmployeeName.Contains(searchString));
+            }
+            return View(employee);
+            /*return _context.Employee != null ? 
+                        View(await _context.Employee.ToListAsync()) :
+                        Problem("Entity set 'employeeManagmentSoftwareContext.Employee'  is null.");*/
         }
 
         // GET: Employees/Details/5

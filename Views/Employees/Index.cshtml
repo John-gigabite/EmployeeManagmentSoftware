@@ -6,8 +6,16 @@
 }
 
 <h1>Index</h1>
-
+<form asp-action="Index" method="get">
+    <div class="form-group">
+        <label for="searchString">Search by Name:</label>
+        <input type="text" name="searchString" value=""/>
+        <input type="submit" value="Search" class="btn btn-primary" />
+    </div>
+</form>
+<hr />
 <p>
+    <a asp-action="Index" style="padding-right: 50px;">Back to Full List</a>
     <a asp-action="Create">Create New</a>
 </p>
 <table class="table">
