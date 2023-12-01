@@ -20,7 +20,7 @@ namespace employeeManagmentSoftware.Controllers
         }
 
         // GET: Employees
-        public IActionResult Index(string searchString)
+        public async Task<IActionResult> Index(string searchString, string sortOrder)
         {
             ViewData["CurrentFilter"] = searchString;
             var employee = from e in _context.Employee
@@ -29,7 +29,23 @@ namespace employeeManagmentSoftware.Controllers
             {
                 employee = employee.Where(e => e.EmployeeName.Contains(searchString));
             }
-            return View(employee);
+
+            ViewData["NameSortParam"] = String.IsNullOrEmpty(sortOrder) ? "NameSort" : "";
+            ViewData["TitleSortParam"] = sortOrder == "Title" ? "title_sort" : "title_sort";
+
+            switch (sortOrder)
+            {
+                case "NameSort":
+                default: 
+                    employee = employee.OrderBy(e => e.EmployeeName);
+                    break;
+                case "title_sort":
+                    employee = employee.OrderBy(e => e.Title);
+                    break;
+            }
+            return View(await employee.AsNoTracking().ToListAsync());
+
+
             /*return _context.Employee != null ? 
                         View(await _context.Employee.ToListAsync()) :
                         Problem("Entity set 'employeeManagmentSoftwareContext.Employee'  is null.");*/
@@ -70,6 +86,7 @@ namespace employeeManagmentSoftware.Controllers
             {
                 _context.Add(employee);
                 await _context.SaveChangesAsync();
+                TempData["success"] = "Employee added successfully";
                 return RedirectToAction(nameof(Index));
             }
             return View(employee);
@@ -121,6 +138,7 @@ namespace employeeManagmentSoftware.Controllers
                         throw;
                     }
                 }
+                TempData["success"] = "Employee updated successfully";
                 return RedirectToAction(nameof(Index));
             }
             return View(employee);
@@ -160,6 +178,7 @@ namespace employeeManagmentSoftware.Controllers
             }
             
             await _context.SaveChangesAsync();
+            TempData["success"] = "Employee removed successfully";
             return RedirectToAction(nameof(Index));
         }
 

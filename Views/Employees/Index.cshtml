@@ -22,13 +22,17 @@
     <thead>
         <tr>
             <th>
+                <a asp-action="Index" asp-route-sortOrder ="@ViewData["NameSortParam"]">
                 @Html.DisplayNameFor(model => model.EmployeeName)
+                </a>
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.EmployeeId)
             </th>
             <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["TitleSortParam"]">
                 @Html.DisplayNameFor(model => model.Title)
+                </a>
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Salary)
