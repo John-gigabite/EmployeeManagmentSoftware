@@ -21,28 +21,46 @@ namespace employeeManagmentSoftware.Controllers
 
         // GET: Employees
         public async Task<IActionResult> Index(string searchString, string sortOrder)
-        {
+        { 
+            ViewData["NameSortParam"] = String.IsNullOrEmpty(sortOrder) ? "NameSort" : "";
+            ViewData["EmployeeIDParam"] = sortOrder == "EmployeeId" ? "" : "id_sort";
+            ViewData["TitleSortParam"] = sortOrder == "Title" ? "" : "title_sort";
+            ViewData["SalarySortParam"] = sortOrder == "Salary" ? "" : "salary_sort";
+            ViewData["TenureSortParam"] = sortOrder == "Tenure" ? "" : "tenure_sort";
+
             ViewData["CurrentFilter"] = searchString;
+
             var employee = from e in _context.Employee
                            select e;
+
             if (!String.IsNullOrEmpty(searchString))
             {
                 employee = employee.Where(e => e.EmployeeName.Contains(searchString));
             }
 
-            ViewData["NameSortParam"] = String.IsNullOrEmpty(sortOrder) ? "NameSort" : "";
-            ViewData["TitleSortParam"] = sortOrder == "Title" ? "title_sort" : "title_sort";
-
             switch (sortOrder)
             {
                 case "NameSort":
-                default: 
                     employee = employee.OrderBy(e => e.EmployeeName);
+                    break;
+                case "id_sort":
+                    employee = employee.OrderBy(e => e.EmployeeId);
                     break;
                 case "title_sort":
                     employee = employee.OrderBy(e => e.Title);
                     break;
+                case "salary_sort":
+                    employee = employee.OrderByDescending(e => e.Salary);
+                    break;
+                case "tenure_sort":
+                    employee = employee.OrderBy(e => e.Tenure);
+                    break;
+                default:
+                    employee = employee.OrderBy(e => e.EmployeeId);
+                    break;
             }
+
+           
             return View(await employee.AsNoTracking().ToListAsync());
 
 
